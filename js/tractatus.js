@@ -1,4 +1,4 @@
-angular.module('wittgenstein-app', []);
+angular.module('wittgenstein-app', ['mobile-angular-ui.gestures','mobile-angular-ui']);
 
 angular.module('wittgenstein-app').controller('WittgensteinController',function($scope, $http, $q){
 
