@@ -21,10 +21,12 @@
     "wittgenstein",
     "tractatus",
     "concepts",
-    "philosophy"
+    "philosophy",
+    "network",
+    "digital humanities"
   ],
   "author": "Anca Bucur & Sergiu Nisioi",
-  "license": "BSD-2-Clause",
+  "license": "GNU General Public License",
   "bugs": {
     "url": "https://github.com/senisioi/wittgenstein-network/issues"
   }
