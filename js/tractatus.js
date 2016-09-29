@@ -16,7 +16,7 @@ angular.module('wittgenstein-app').controller('WittgensteinController',function(
               },
               physics: {
                   forceAtlas2Based: {
-                      gravitationalConstant: -26,
+                      gravitationalConstant: -38,
                       centralGravity: 0.005,
                       springLength: 230,
                       springConstant: 0.18
@@ -38,42 +38,40 @@ angular.module('wittgenstein-app').controller('WittgensteinController',function(
           $scope.network.on("click", neighbourhoodHighlight);
       }
 
-	loadNetwork();
+    loadNetwork();
     $scope.$watch('searchTextBox', function() {
-    	if ($scope.searchTextBox){
+        if ($scope.searchTextBox){
             var options = {
-	          shouldSort: true,
-	          threshold: 0.6,
-	          location: 0,
-	          distance: 100,
-	          maxPatternLength: 32,
-	          keys: ["label"]
-	        };
-	        var fuse = new Fuse(nodes, options); 
-	        var result = fuse.search($scope.searchTextBox);
-	        //var val = JSON.stringify(result[0], null, '  ');
-	        document.getElementById('resultTextArea').textContent = "Concept: " + result[0].label + "; Group: "+result[0].group;
-	        if (result==null || result===false)
-	        {
-	            var params = {
-	                nodes: []
-	            }
-	        }
-	        else
-	        {
-	            var params = {
-	                nodes: [result[0].id]
-	            }
-	        }
-	        neighbourhoodHighlight(params);    
+              shouldSort: true,
+              threshold: 0.6,
+              location: 0,
+              distance: 100,
+              maxPatternLength: 32,
+              keys: ["label"]
+            };
+            var fuse = new Fuse(nodes, options); 
+            var result = fuse.search($scope.searchTextBox);
+            if (result==null || result===false)
+            {
+                var params = {
+                    nodes: []
+                }
+            }
+            else
+            {
+                var params = {
+                    nodes: [result[0].id]
+                }
+            }
+            neighbourhoodHighlight(params);    
         } 
         else
         {
-        	neighbourhoodHighlight({nodes:[]});    
+            neighbourhoodHighlight({nodes:[]});    
         }
     }, true);
 
-	function neighbourhoodHighlight(params) {
+    function neighbourhoodHighlight(params) {
           var allNodes = $scope.nodesDataset.get({
               returnType: "Object"
           });
@@ -82,6 +80,7 @@ angular.module('wittgenstein-app').controller('WittgensteinController',function(
               var i, j;
               var selectedNode = params.nodes[0];
               var degrees = 2;
+              document.getElementById('resultTextArea').textContent = "Concept: " + allNodes[selectedNode].label + "; Proposition: " + allNodes[selectedNode].group;
 
               for (var nodeId in allNodes) {
                   allNodes[nodeId].color = 'rgba(200,200,200,0.5)';
