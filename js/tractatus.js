@@ -3,13 +3,17 @@ angular.module('wittgenstein-app', ['mobile-angular-ui.gestures','mobile-angular
 angular.module('wittgenstein-app').controller('WittgensteinController',function($scope, $http, $q){
 
 
-    $scope.nodesDataset = new vis.DataSet(nodes);
-    $scope.edgesDataset = new vis.DataSet(edges);
-
+    $scope.nodesDataset = new vis.DataSet(nodes["english_ogden"]);
+    $scope.edgesDataset = new vis.DataSet(edges["english_ogden"]);
+    $scope.searchNodes = nodes["english_ogden"];
    
     function loadNetwork() {
           var container = document.getElementById('conceptNetwork');
           var options = {
+              autoResize: true,
+              layout: {
+                  improvedLayout:false
+              },
               nodes: {
                   shape: 'dot',
                   size: 16
@@ -18,7 +22,7 @@ angular.module('wittgenstein-app').controller('WittgensteinController',function(
                   forceAtlas2Based: {
                       gravitationalConstant: -38,
                       centralGravity: 0.005,
-                      springLength: 230,
+                      //springLength: 230,
                       springConstant: 0.18
                   },
                   maxVelocity: 146,
@@ -36,9 +40,33 @@ angular.module('wittgenstein-app').controller('WittgensteinController',function(
           }
           $scope.network = new vis.Network(container, data, options);
           $scope.network.on("click", neighbourhoodHighlight);
+
+          $scope.network.on("stabilizationProgress", function(params) {
+                document.getElementById("loadersmall").style.display = "block";
+                document.getElementById("conceptNetwork").style.display = "none";
+             });
+          $scope.network.once("stabilizationIterationsDone", function() {
+            setTimeout(function(){
+              document.getElementById("loadersmall").style.display = "none";
+              document.getElementById("conceptNetwork").style.display = "block";
+            }
+            , 5500);
+
+            });
+
       }
 
-    loadNetwork();
+    $scope.$watch('languageSelect', function() {
+        if ($scope.languageSelect){
+          $scope.nodesDataset = new vis.DataSet(nodes[$scope.languageSelect]);
+          $scope.edgesDataset = new vis.DataSet(edges[$scope.languageSelect]);
+          $scope.searchNodes = nodes[$scope.languageSelect];
+          loadNetwork();
+        }
+       
+    }, true);
+
+
     $scope.$watch('searchTextBox', function() {
         if ($scope.searchTextBox){
             var options = {
@@ -47,11 +75,12 @@ angular.module('wittgenstein-app').controller('WittgensteinController',function(
               location: 0,
               distance: 100,
               maxPatternLength: 32,
-              keys: ["label"]
+              keys: ["title", "label"]
             };
-            var fuse = new Fuse(nodes, options); 
+            
+            var fuse = new Fuse($scope.searchNodes, options); 
             var result = fuse.search($scope.searchTextBox);
-            if (result==null || result===false)
+            if (result==null || result===false || result[0] == null || result[0].id == null)
             {
                 var params = {
                     nodes: []
@@ -62,14 +91,18 @@ angular.module('wittgenstein-app').controller('WittgensteinController',function(
                 var params = {
                     nodes: [result[0].id]
                 }
+                $scope.network.focus(result[0].id);  
             }
-            neighbourhoodHighlight(params);    
+            neighbourhoodHighlight(params);  
+            
         } 
         else
         {
             neighbourhoodHighlight({nodes:[]});    
         }
     }, true);
+
+    loadNetwork();
 
     function neighbourhoodHighlight(params) {
           var allNodes = $scope.nodesDataset.get({
@@ -80,7 +113,7 @@ angular.module('wittgenstein-app').controller('WittgensteinController',function(
               var i, j;
               var selectedNode = params.nodes[0];
               var degrees = 2;
-              document.getElementById('resultTextArea').textContent = "Concept: " + allNodes[selectedNode].label + "; Proposition: " + allNodes[selectedNode].group;
+              document.getElementById('resultTextArea').innerHTML = " Proposition: " + allNodes[selectedNode].title;
 
               for (var nodeId in allNodes) {
                   allNodes[nodeId].color = 'rgba(200,200,200,0.5)';
@@ -119,6 +152,7 @@ angular.module('wittgenstein-app').controller('WittgensteinController',function(
                   allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
                   allNodes[selectedNode].hiddenLabel = undefined;
               }
+              
           } else if ($scope.highlightActive === true) {
               for (var nodeId in allNodes) {
                   allNodes[nodeId].color = undefined;

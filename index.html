@@ -1,6 +1,7 @@
 <!doctype html>
 <html ng-app="wittgenstein-app">
 <meta name="apple-mobile-web-app-capable" content="yes" />
+<meta charset="UTF-8">
 <head>
     <title>Wittgenstein Tractatus Concept Network</title>
 
@@ -12,7 +13,7 @@
         #conceptNetwork {
             margin: auto;
             width: 100%;
-            height: 90%;
+            height: 100%;
             border: 1px solid lightgray;
             display: none;
         }
@@ -95,28 +96,32 @@
 
 
 
-<body onload="loadNet()" style="margin:0;" ng-controller="WittgensteinController">
+<body style="margin:0;" ng-controller="WittgensteinController">
 
+    
     <div id="loadersmall"></div>
-    <div id="conceptNetwork" class="animate-bottom">
-    </div>
+    <div id="conceptNetwork" class="animate-bottom"></div>
     <div id="textDiv">
         <p>
             Search Wittgenstein's Tractatus Logico-Philosophicus
             <input type="text" class="form-control" id="searchTextbox" ng-model="searchTextBox" placeholder="logical">
-            <p id="resultTextArea"> Concept and Group </p>
+            <p id="resultTextArea"> Proposition </p>
         </p>
-    </div>    
-    <script>
-        function loadNet() {
-            setTimeout(showPage, 5500);
-        }
 
-        function showPage() {
-            document.getElementById("loadersmall").style.display = "none";
-            document.getElementById("conceptNetwork").style.display = "block";
-        }
-    </script>
+        <p>
+          <label for="languageSelect">Select language:</label>
+          <select id="languageSelect" ng-model="languageSelect" ng-init="languageSelect='english_ogden'">
+            <option value="english_ogden" selected>English Ogden</option>
+            <option value="german">German</option>
+            <option value="english_peamg">English Pears &amp; McGuinness</option>
+            <option value="italian">Italian</option>
+            <option value="spanish">Spanish</option>
+            <option value="french">French</option>
+            <option value="russian">Russian</option>
+          </select>
+        </p>
+
+    </div>    
 
     <script src="js/tractatus.js"></script>
 
